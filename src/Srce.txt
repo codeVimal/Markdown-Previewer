@@ -1,0 +1,35 @@
+import React, { useState } from "react";
+import {marked} from "marked";
+
+function MarkdownPreviewer() {
+  const [markdown, setMarkdown] = useState("");
+
+  const handleDownload = () => {
+    const html = marked(markdown);
+    const element = document.createElement("a");
+    const file = new Blob([html], { type: "text/html" });
+    element.href = URL.createObjectURL(file);
+    element.download = "preview.html";
+    document.body.appendChild(element);
+    element.click();
+  };
+
+  return (
+    <div>
+      <Editor onChange={(event) => setMarkdown(event.target.value)} value={markdown} />
+      <button onClick={handleDownload}>Download Preview</button>
+      <Preview markdown={markdown} />
+    </div>
+  );
+}
+
+function Editor({ onChange, value }) {
+  return <textarea onChange={onChange} value={value} />;
+}
+
+function Preview({ markdown }) {
+  const parsedMarkdown = marked(markdown);
+  return <div dangerouslySetInnerHTML={{ __html: parsedMarkdown }} />;
+}
+
+export default MarkdownPreviewer;
